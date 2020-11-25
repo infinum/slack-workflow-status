@@ -137,7 +137,7 @@ async function main(){
     // Create a new field for this job
     job_fields.push({
       short: true,
-      value: job_status_icon + " <" + job.html_url + "|" + job.name + "> (" + job_duration(new Date(job.started_at), new Date(job.completed_at)) + ")"
+      value: `${job_status_icon} <${job.html_url}|${job.name}> (${job_duration(new Date(job.started_at), new Date(job.completed_at))})`
     })
   }
 
@@ -158,22 +158,22 @@ async function main(){
 
   // Payload Formatting Shortcuts
   const workflow_duration: string = job_duration(new Date(workflow_run.data.created_at), new Date(workflow_run.data.updated_at))
-  const repo_url: string = "<https://github.com/" + workflow_run.data.repository.full_name + "|*"+ workflow_run.data.repository.full_name +"*>"
-  const branch_url: string = "<https://github.com/"+workflow_run.data.repository.full_name+"/tree/"+branch+"|*"+branch+"*>"
-  const workflow_run_url: string = "<"+workflow_run.data.html_url+"|#"+workflow_run.data.run_number+">"
+  const repo_url: string = `<https://github.com/${workflow_run.data.repository.full_name}|*${workflow_run.data.repository.full_name}*>`
+  const branch_url: string = `<https://github.com/${workflow_run.data.repository.full_name}/tree/${branch}|*${branch}*>`
+  const workflow_run_url: string = `<${workflow_run.data.html_url}|#${workflow_run.data.run_number}>`
   // Example: Success: AnthonyKinson's `push` on `master` for pull_request
-  let status_string: string = workflow_msg+" "+context.actor+"'s `"+context.eventName+"` on `"+branch_url+"`\n"
+  let status_string: string = `${workflow_msg} ${context.actor}'s \`${context.eventName}\` on \`${branch_url}\`\n`
   // Example: Workflow: My Workflow #14 completed in `1m 30s`
-  const details_string: string = "Workflow: "+context.workflow+" "+workflow_run_url+" completed in `"+ workflow_duration+"`"
+  const details_string: string = `Workflow: ${context.workflow} ${workflow_run_url} completed in \`${workflow_duration}\``
 
   // Build Pull Request string if required
   let pull_requests = ""
   for(let pull_request of workflow_run.data.pull_requests as PullRequest[]){
-    pull_requests += ", <https://github.com/"+ workflow_run.data.repository.full_name + "/pull/" + pull_request.number + "|#" + pull_request.number + "> from `"+pull_request.head.ref+"` to `"+pull_request.base.ref+"`"
+    pull_requests += `, <https://github.com/${workflow_run.data.repository.full_name}/pull/${pull_request.number}|#${pull_request.number}> from \`${pull_request.head.ref}\` to \`${pull_request.base.ref}\``
   }
   if(pull_requests != ""){
     pull_requests = pull_requests.substr(1)
-    status_string = workflow_msg+" "+context.actor+"'s `pull_request`"+pull_requests+"\n"
+    status_string = `${workflow_msg} ${context.actor}'s \`pull_request\`${pull_requests}\n`
   }
 
   // We're using old style attachments rather than the new blocks because:
